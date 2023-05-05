@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body{
+    background-color: #171717;
+    font-family: 'League Spartan', sans-serif;
+}
+
+.fancy {
+    font-family: 'Leckerli One', cursive;
+}
+
+.palm-tree {
+    position: absolute;
+    right: 40px;
+    font-size: 350px;
+    bottom: 100px;
+    color: #22c55e;
+}
