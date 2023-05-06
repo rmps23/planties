@@ -2,38 +2,117 @@
 @tailwind components;
 @tailwind utilities;
 
-body{
-    font-family: 'League Spartan', sans-serif;
-    background-color: #111;
+body {
+  font-family: "League Spartan", sans-serif;
+  background-color: #111;
 }
 
 .fancy {
-    font-family: 'Leckerli One', cursive;
+  font-family: "Leckerli One", cursive;
 }
 
 .palm-tree {
-    position: absolute;
-    right: 0;
-    font-size: 350px;
+  position: absolute;
+  right: 0;
+  font-size: 350px;
 }
 
 .teardrop {
-    right: 120px;
-    top: 0%;
-    position: absolute;
-    font-size: 60px;
-    color: #16a34a;
-    cursor: pointer;
-    transition: 1s;
+  right: 210px;
+  top: 270px;
+  position: absolute;
+  font-size: 20px;
+  color: #0099b4;
+  transition: 1s;
+  opacity: 1;
+  animation-name: drip;
+  animation-duration: 1s;
+  animation-iteration-count: 2;
+  animation-delay: 0.6s;
+}
+
+@keyframes drip {
+  0% {
+    top: 270px;
+  }
+  100% {
+    top: 700px;
+  }
+}
+
+.teardrop2 {
+  right: 170px;
+  top: 260px;
+  position: absolute;
+  font-size: 20px;
+  color: #0099b4;
+  transition: 1s;
+  opacity: 1;
+  animation-name: drip2;
+  animation-duration: 1s;
+  animation-iteration-count: 2;
+  animation-delay: 0.2s;
+}
+
+@keyframes drip2 {
+  0% {
+    top: 260px;
+  }
+  100% {
+    top: 700px;
+  }
+}
+
+.teardrop3 {
+  right: 130px;
+  top: 265px;
+  position: absolute;
+  font-size: 20px;
+  color: #0099b4;
+  transition: 1s;
+  opacity: 1;
+  animation-name: drip3;
+  animation-duration: 1s;
+  animation-iteration-count: 2;
+  animation-delay: 0.4s;
+}
+
+@keyframes drip3 {
+  0% {
+    top: 260px;
+  }
+  100% {
+    top: 700px;
+  }
 }
 
 .teardrop-plant {
-    right: 120px;
-    top: 700px;
-    position: absolute;
-    font-size: 60px;
-    color: #16a34a;
-    cursor: pointer;
-    transition: 1s;
-    transition-delay: 1s;
+  right: 120px;
+  top: 700px;
+  position: absolute;
+  font-size: 60px;
+  color: #22c55e;
+  transition: 1s;
+  transition-delay: 1s;
+  transform: rotate(-20deg);
+}
+
+.cloud {
+  right: 80px;
+  top: 25%;
+  position: absolute;
+  font-size: 200px;
+  color: #eee;
+  transition: 1s;
+  z-index: 9;
+}
+
+.sun {
+  right: 10px;
+  top: 25%;
+  position: absolute;
+  font-size: 120px;
+  color: #f5f104;
+  opacity: 0;
+  transition: 1s;
 }
