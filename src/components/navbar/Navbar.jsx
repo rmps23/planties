@@ -4,7 +4,7 @@ import { FaUser } from 'react-icons/fa';
 
 const Navbar = () => {
   return (
-    <div className='bg-neutral-900 h-16'>
+    <div className='h-16'>
         <div className='max-w-7xl flex mx-auto h-full justify-between px-6'>
           <div className='my-auto'>
             <h1 className='text-green-500 text-xl flex title fancy'>Planties<RiLeafFill className='flex'/></h1>

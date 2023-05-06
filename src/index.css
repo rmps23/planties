@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 body{
-    background-color: #171717;
     font-family: 'League Spartan', sans-serif;
+    background-color: #111;
 }
 
 .fancy {
@@ -13,8 +13,27 @@ body{
 
 .palm-tree {
     position: absolute;
-    right: 40px;
+    right: 0;
     font-size: 350px;
-    bottom: 100px;
-    color: #22c55e;
+}
+
+.teardrop {
+    right: 120px;
+    top: 0%;
+    position: absolute;
+    font-size: 60px;
+    color: #16a34a;
+    cursor: pointer;
+    transition: 1s;
+}
+
+.teardrop-plant {
+    right: 120px;
+    top: 700px;
+    position: absolute;
+    font-size: 60px;
+    color: #16a34a;
+    cursor: pointer;
+    transition: 1s;
+    transition-delay: 1s;
 }
