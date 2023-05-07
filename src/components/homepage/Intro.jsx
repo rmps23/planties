@@ -1,6 +1,6 @@
 import React from "react";
-import Wave from "./wave.svg";
-import TearDrop from "./TearDrop";
+import Wave from "./assets/wave.svg";
+import TearDrop from "./teardrop/TearDrop";
 import HomeButton from "./HomeButton";
 
 import { RiLeafFill } from "react-icons/ri";
@@ -32,7 +32,6 @@ const Intro = () => {
               <HomeButton />
             </div>
           </Fade>
-          {/* ANIMATION */}
           <TearDrop />
         </div>
       </div>

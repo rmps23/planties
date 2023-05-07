@@ -3,6 +3,7 @@ import { GiWaterDrop } from "react-icons/gi";
 import { RiLeafFill } from "react-icons/ri";
 import { AiFillCloud } from "react-icons/ai";
 import { BsFillSunFill } from "react-icons/bs";
+import "./TearDrop.css";
 
 const TearDrop = () => {
   function handlePlantGrow() {
@@ -23,9 +24,12 @@ const TearDrop = () => {
       tear.style.display = "none";
     });
 
-    sun.style.opacity = "1";
     cloud.style.opacity = "0";
-    ~sun.classList.add("animate-pulse");
+    setTimeout(function() {
+      sun.style.opacity = "1";
+      sun.classList.add("animate-pulse");
+    }, 1000);
+    
   }
   setTimeout(handleSun, 4000);
 
