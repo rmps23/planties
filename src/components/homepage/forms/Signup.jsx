@@ -9,7 +9,7 @@ const Signup = ({ handleCloseClick, changeToLogin }) => {
       </button>
       <div className="w-full">
         <form>
-          <p className="text-neutral-50 w-96 text-lg mb-10 mt-1">Sign Up</p>
+          <p className="text-neutral-50 w-96 text-lg mb-6 mt-1">Sign Up</p>
 
           <div className="my-4">
             <p className="text-sm mb-1 text-green-500">Name</p>
