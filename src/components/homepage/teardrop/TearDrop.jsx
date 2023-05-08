@@ -10,7 +10,7 @@ const TearDrop = () => {
     let plant = document.getElementById("teardrop-plant");
 
     plant.style.fontSize = "130px";
-    plant.style.top = "550px";
+    plant.style.top = "610px";
     plant.style.right = "80px";
   }
   setTimeout(handlePlantGrow, 1500);

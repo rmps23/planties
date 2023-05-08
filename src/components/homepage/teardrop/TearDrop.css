@@ -69,13 +69,13 @@
   
   .teardrop-plant {
     right: 120px;
-    top: 700px;
+    top: 750px;
     position: absolute;
     font-size: 60px;
     color: #22c55e;
     transition: 1s;
     transition-delay: 1s;
-    transform: rotate(-20deg);
+    transform: rotate(-10deg);
   }
   
   .cloud {

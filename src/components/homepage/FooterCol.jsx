@@ -8,7 +8,7 @@ const FooterCol = ({ title, text, link }) => {
   const mergedArray = splitLinks.map((item, index) => [item, splitRefs[index]]);
 
   return (
-    <div>
+    <div className="text-center mb-10 md:text-left md:mb-0">
       <h1 className="text-2xl font-bold mb-4">{title}</h1>
       {mergedArray.map((item, index) => {
         return (

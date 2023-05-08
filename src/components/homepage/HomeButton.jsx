@@ -31,7 +31,7 @@ const HomeButton = ({}) => {
       
       <Router>
         <Link
-          className="transition ease-in-out duration-500 inline-flex items-center h-16 px-6 pt-1 bg-green-600 text-md hover:opacity-60 rounded-sm shadow-lg shadow-green-600/20"
+          className="transition ease-in-out duration-500 inline-flex items-center h-16 px-2 md:px-6 pt-1 bg-green-600 text-md hover:opacity-60 rounded-sm shadow-lg shadow-green-600/20"
           onClick={handleLinkClick}
         >
           <span className="ml-3 font-bold">JOIN US</span>
@@ -41,7 +41,7 @@ const HomeButton = ({}) => {
         </Link>
         <Link
           to="/about"
-          className="transition ease-in-out duration-500 inline-flex items-center h-16 px-6 pt-1 bg-neutral-800 text-md hover:opacity-60 rounded-sm shadow-lg shadow-green-600/10"
+          className="transition ease-in-out duration-500 inline-flex items-center h-16 px-2 md:px-6 pt-1 bg-neutral-800 text-md hover:opacity-60 rounded-sm shadow-lg shadow-green-600/10"
         >
           <span className="ml-3 font-bold">ABOUT</span>
           <span className="ml-4 mb-1">
