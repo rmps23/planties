@@ -66,7 +66,7 @@ const Login = ({ handleCloseClick }) => {
       >
         &#10006;
       </button>
-      <div className="w-full">
+      <div className="w-full md:w-96 text-left">
         <form>
           <p className="text-neutral-50 w-96 text-lg mb-6 mt-1">Login</p>
           <div className="my-4">

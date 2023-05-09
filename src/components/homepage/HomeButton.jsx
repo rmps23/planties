@@ -52,7 +52,7 @@ const HomeButton = ({}) => {
 
       <dialog
         ref={dialogSignup}
-        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 m-0 bg-neutral-900 rounded-md p-10 z-0"
+        className="md:top-1/2 md:left-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 bg-neutral-900 rounded-md p-10 md:w-max w-full"
       >
         <Signup
           handleCloseClick={handleCloseClick}
@@ -63,7 +63,7 @@ const HomeButton = ({}) => {
 
       <dialog
         ref={dialogLogin}
-        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 m-0 bg-neutral-900 rounded-md p-10"
+        className="md:top-1/2 md:left-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 bg-neutral-900 rounded-md p-10 md:w-max w-full"
       >
         <Login handleCloseClick={handleCloseClick} />
       </dialog>
