@@ -4,7 +4,7 @@ import { BsGear } from "react-icons/bs";
 
 const TopNavbar = () => {
   return (
-    <nav className="w-full h-16 bg-neutral-900 shadow-sm shadow-green-600/60 fixed">
+    <nav className="w-full h-16 bg-neutral-900 shadow-sm shadow-green-600/60 fixed z-10 bg-opacity-50 backdrop-filter backdrop-blur-md">
       <div className="max-w-7xl mx-auto h-full p-4">
         <div className="w-full flex justify-between items-center h-full">
           <div className="flex">

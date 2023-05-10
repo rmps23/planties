@@ -10,7 +10,18 @@ const Signup = ({ handleCloseClick, changeToLogin }) => {
       <div className="w-full md:w-96 text-left">
         <form>
           <p className="text-neutral-50 text-lg mb-6 mt-1">Sign Up</p>
-
+          <div className="my-4">
+            <p className="text-md mb-1 text-neutral-50">
+              Advance this step, this is a preview click:
+              <a
+                href="main"
+                className="text-green-500 cursor-pointer"
+              >
+                {" "}
+                Advance
+              </a>
+            </p>
+          </div>
           <div className="my-4">
             <p className="text-sm mb-1 text-green-500">Name</p>
             <input
@@ -44,6 +55,7 @@ const Signup = ({ handleCloseClick, changeToLogin }) => {
               </span>
             </p>
           </div>
+
           <div className="my-8">
             <button className="bg-green-500 w-full h-8 hover:opacity-70 transition ease-in-out duration-300">
               Submit
