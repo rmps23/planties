@@ -38,7 +38,7 @@ function App() {
         <p>
           Missing Supabase configuration. Copy <code>.env.example</code> to{" "}
           <code>.env</code> and set <code>VITE_SUPABASE_URL</code> and{" "}
-          <code>VITE_SUPABASE_ANON_KEY</code>.
+          <code>VITE_SUPABASE_PUBLISHABLE_KEY</code>.
         </p>
       </Splash>
     )

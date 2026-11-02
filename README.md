@@ -46,7 +46,7 @@ Set `VITE_DEMO_EMAIL` and `VITE_DEMO_PASSWORD` in `.env` to show the demo login 
 
 ## Deploying
 
-- Front-end: import the repo on Vercel and set `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (and the demo variables) as environment variables.
+- Front-end: import the repo on Vercel and set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (and the demo variables) as environment variables.
 - Back-end: Supabase free tier, nothing else to host.
 
 ## Screenshots
