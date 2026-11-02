@@ -6,8 +6,8 @@ A social network for plant lovers: share photos of your plants, discover species
 
 **Demo account** (no sign-up needed, use the "Try the demo account" button on the login form):
 
-- Email: _fill in after running the seed script_
-- Password: _fill in after running the seed script_
+- Email: `demo@planties.app`
+- Password: `Demo-QGX2kxRJ43`
 
 ## Features
 
