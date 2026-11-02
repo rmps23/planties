@@ -54,7 +54,7 @@ const QuestionList = () => {
               <p className="text-lg">{q.title}</p>
               <p className="text-sm text-neutral-400">
                 @{q.author.username} · {timeAgo(q.created_at)}
-                {q.species && ` · ${q.species.common_name}`} · {q.answers[0]?.count ?? 0} answers
+                {q.species && ` · ${q.species.common_name}`} · {q.answers[0]?.count ?? 0} {q.answers[0]?.count === 1 ? "answer" : "answers"}
                 {q.accepted_answer_id && <span className="text-green-500"> · Solved</span>}
               </p>
             </Link>

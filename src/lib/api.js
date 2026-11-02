@@ -1,7 +1,7 @@
 import { supabase } from "./supabase";
 
 const POST_SELECT =
-  "id, body, image_url, created_at, author:profiles(id, username, avatar_url), species(id, common_name, slug), likes(user_id), comments(count)";
+  "id, body, image_url, created_at, author:profiles!posts_author_id_fkey(id, username, avatar_url), species(id, common_name, slug), likes(user_id), comments(count)";
 
 const unwrap = ({ data, error }) => {
   if (error) throw error;
@@ -45,7 +45,7 @@ export const setLike = (postId, userId, liked) =>
 export const fetchComments = (postId) =>
   supabase
     .from("comments")
-    .select("id, body, created_at, author:profiles(username)")
+    .select("id, body, created_at, author:profiles!comments_author_id_fkey(username)")
     .eq("post_id", postId)
     .order("created_at")
     .then(unwrap);
@@ -68,14 +68,14 @@ export const updateBio = (userId, bio) =>
 export const fetchQuestions = () =>
   supabase
     .from("questions")
-    .select("id, title, created_at, accepted_answer_id, author:profiles(username), species(common_name), answers(count)")
+    .select("id, title, created_at, accepted_answer_id, author:profiles!questions_author_id_fkey(username), species(common_name), answers!answers_question_id_fkey(count)")
     .order("created_at", { ascending: false })
     .then(unwrap);
 
 export const fetchQuestion = (id) =>
   supabase
     .from("questions")
-    .select("*, author:profiles(username), species(common_name, slug)")
+    .select("*, author:profiles!questions_author_id_fkey(username), species(common_name, slug)")
     .eq("id", id)
     .maybeSingle()
     .then(unwrap);
@@ -91,7 +91,7 @@ export const createQuestion = ({ userId, title, body, speciesId }) =>
 export const fetchAnswers = (questionId) =>
   supabase
     .from("answers")
-    .select("id, body, created_at, author:profiles(username)")
+    .select("id, body, created_at, author:profiles!answers_author_id_fkey(username)")
     .eq("question_id", questionId)
     .order("created_at")
     .then(unwrap);
