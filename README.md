@@ -1,25 +1,54 @@
 # Planties
 
-A social network concept for plant lovers: share photos of your plants, discover new species and swap tips with other growers.
+A social network for plant lovers: share photos of your plants, discover species, and ask the community for help.
 
 **Live demo:** https://planties.vercel.app
 
-Front-end prototype built in 2023. It runs on mock data (`public/data/*.json`); there's no backend yet.
+**Demo account** (no sign-up needed, use the "Try the demo account" button on the login form):
+
+- Email: _fill in after running the seed script_
+- Password: _fill in after running the seed script_
 
 ## Features
 
-- Landing page with sign-up and login forms
-- Home feed with posts and a "new post" form with image picker
-- Trending section, top and side navigation
-- Toast notifications and scroll-reveal animations
+- Email/password accounts: sign up, log in, log out, password reset by email
+- Posts with image upload, optionally tagged with a plant species
+- Likes and comments
+- User profiles with their posts and an editable bio
+- Plant species directory with search and per-species posts
+- Q&A: ask questions, answer, and accept the best answer
+- Trending plants, responsive layout, keyboard and screen-reader friendly forms
 
 ## Stack
 
-React 18 · Vite · Tailwind CSS · React Router
+React 18 · Vite · Tailwind CSS · React Router · Supabase (Auth, Postgres with row level security, Storage) · react-toastify
 
 ## Running locally
 
+1. Create a free project at [supabase.com](https://supabase.com).
+2. In the SQL editor run `supabase/schema.sql`, then `supabase/seed_species.sql`.
+3. In Authentication > URL Configuration add `http://localhost:5173` (and your Vercel URL) as redirect URLs.
+4. Copy the environment file and fill it from Project Settings > API:
+
 ```bash
+cp .env.example .env
 npm install
 npm run dev
 ```
+
+Optional, to create the demo account and sample content (the service role key is secret and is never used by the app itself):
+
+```bash
+SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... DEMO_EMAIL=demo@example.com DEMO_PASSWORD=... node scripts/seed-demo.mjs
+```
+
+Set `VITE_DEMO_EMAIL` and `VITE_DEMO_PASSWORD` in `.env` to show the demo login button.
+
+## Deploying
+
+- Front-end: import the repo on Vercel and set `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (and the demo variables) as environment variables.
+- Back-end: Supabase free tier, nothing else to host.
+
+## Screenshots
+
+_Coming soon._
