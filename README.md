@@ -51,4 +51,10 @@ Set `VITE_DEMO_EMAIL` and `VITE_DEMO_PASSWORD` in `.env` to show the demo login 
 
 ## Screenshots
 
-_Coming soon._
+| Landing | Feed |
+|---|---|
+| ![Landing page](docs/screenshots/landing.png) | ![Feed](docs/screenshots/feed.png) |
+
+| Species directory | Species page |
+|---|---|
+| ![Species directory](docs/screenshots/plants.png) | ![Peace Lily page](docs/screenshots/plant-detail.png) |
