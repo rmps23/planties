@@ -1,4 +1,3 @@
-import React from "react";
 import Wave from "./assets/wave.svg";
 import TearDrop from "./teardrop/TearDrop";
 import HomeButton from "./HomeButton";
@@ -12,7 +11,7 @@ const Intro = () => {
     <>
       <div className="relative">
         <div className="max-w-7xl mx-auto pt-32 text-neutral-50 px-6 relative items-center">
-          <Fade triggerOnce={"true"}>
+          <Fade triggerOnce>
             <p className="text-5xl md:text-7xl mb-4 fancy flex justify-center md:justify-start">
               Planties
               <RiLeafFill className="flex text-4xl md:text-6xl text-green-600" />
@@ -39,7 +38,7 @@ const Intro = () => {
         </div>
       </div>
       <div className="w-full relative pt-14">
-        <img src={Wave} className="text-green-700 hidden md:block object-cover" />
+        <img src={Wave} alt="" className="text-green-700 hidden md:block object-cover" />
       </div>
       <Footer />
     </>

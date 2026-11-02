@@ -1,114 +1,70 @@
-import React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
+import Field from "./Field";
+
+const demoEmail = import.meta.env.VITE_DEMO_EMAIL;
+const demoPassword = import.meta.env.VITE_DEMO_PASSWORD;
 
 const Login = ({ handleCloseClick }) => {
-  const [data, setData] = useState([]);
-  const [emailSt, setEmail] = useState();
-  const [pwSt, setpwSt] = useState();
-  const [isValidEmail, setIsValidEmail] = useState(true);
-  const [isValidPw, setIsValidPw] = useState(true);
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
+  const login = async (mail, pw) => {
+    setBusy(true);
+    setError("");
+    const { error: err } = await signIn(mail, pw);
+    setBusy(false);
+    if (err) setError(err.message);
+    else navigate("/feed");
+  };
 
-  const email = useRef(null);
-  const pw = useRef(null);
-
-  function handleLogin(event) {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    const fetchData = async () => {
-      const response = await fetch("data/user.json");
-      const json = await response.json();
-      setData(json);
-    };
-
-    fetchData();
-  }
-
-  function handleError(event) {
-    const value = event.target.value;
-
-    if (value) {
-      let classStr = event.target.className;
-      classStr = classStr.replace("border border-red-500 focus:shadow-red-500/20", "");
-      event.target.className = classStr;
-      if (event.target.name === "email") {
-        setIsValidEmail(true)
-      }else if (event.target.name === "pw") {
-        setIsValidPw(true)
-      }
-      
-    }
-  }
-
-  useEffect(() => {
-    if (data.length > 0) {
-      const emailValue = email.current.value;
-      const pwValue = pw.current.value;
-      
-      if (emailValue === "") {
-        email.current.className = email.current.className + " border border-red-500 focus:shadow-red-500/20";
-        setIsValidEmail(false)
-      }
-
-      if (pwValue === "") {
-        pw.current.className = pw.current.className + " border border-red-500 focus:shadow-red-500/20";
-        setIsValidPw(false)
-      }
-
-      window.location.href = 'main';
-    }
-  }, [data]);
+    login(email, password);
+  };
 
   return (
     <>
       <button
+        type="button"
         onClick={handleCloseClick}
+        aria-label="Close"
         className="absolute right-10 top-10 text-neutral-50 text-sm hover:bg-neutral-800 transition ease-in-out duration-300 w-10 h-10 align-middle rounded-full"
       >
-        &#10006;
+        <span aria-hidden="true">&#10006;</span>
       </button>
       <div className="w-full md:w-96 text-left">
-        <form>
-          <p className="text-neutral-50 w-96 text-lg mb-6 mt-1">Login</p>
-          <div className="my-4">
-            <p className="text-sm mb-1 text-green-500">Email</p>
-            <input
-              ref={email}
-              name="email"
-              value={emailSt}
-              onChange={(event) => handleError(event)}
-              type="email"
-              className="w-full p-2 rounded-sm bg-neutral-950 text-neutral-50 focus:outline-none border-neutral-950 focus:ring-1 focus:ring-green-500 transition ease-in-out duration-300 shadow-md focus:shadow-green-500/20 mb-1"
-            />
-            {!isValidEmail && <p className="text-red-500">Invalid email</p>}
-          </div>
-          <div className="my-4">
-            <p className="text-sm mb-1 text-green-500">Password</p>
-            <input
-              ref={pw}
-              name="pw"
-              value={pwSt}
-              onChange={(event) => handleError(event)}
-              type="password"
-              className="w-full p-2 rounded-sm bg-neutral-950 text-neutral-50 focus:outline-none border-neutral-950 focus:ring-1 focus:ring-green-500 transition ease-in-out duration-300 shadow-md focus:shadow-green-500/20 mb-1"
-            />
-            {!isValidPw && <p className="text-red-500">Invalid password</p>}
-          </div>
-          <div className="my-4 font-thin">
-            <p className="text-sm text-neutral-50">
-              <span className="w-1/4 inline-block">Email:</span>{" "}
-              test@planties.com
-            </p>
-            <p className="text-sm text-neutral-50">
-              <span className="w-1/4 inline-block">Password:</span> test
-            </p>
-          </div>
-          <div className="my-6">
+        <form onSubmit={handleSubmit}>
+          <h2 className="text-neutral-50 text-lg mb-6 mt-1">Login</h2>
+          <Field label="Email" type="email" name="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Field label="Password" type="password" name="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          <p role="alert" className="text-red-500 text-sm min-h-[1.25rem]">{error}</p>
+          <p className="text-sm text-neutral-50 mt-2">
+            <Link to="/forgot-password" className="text-green-500 underline">Forgot your password?</Link>
+          </p>
+          <div className="my-6 space-y-3">
             <button
-              className="bg-green-500 w-full h-8 hover:opacity-70 transition ease-in-out duration-300 rounded-sm"
-              onClick={handleLogin}
+              type="submit"
+              disabled={busy}
+              className="bg-green-500 text-neutral-900 w-full h-8 hover:opacity-70 disabled:opacity-50 transition ease-in-out duration-300 rounded-sm"
             >
-              Submit
+              {busy ? "Signing in…" : "Submit"}
             </button>
+            {demoEmail && demoPassword && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => login(demoEmail, demoPassword)}
+                className="border border-green-500 text-green-500 w-full h-8 hover:bg-green-500/10 transition ease-in-out duration-300 rounded-sm"
+              >
+                Try the demo account
+              </button>
+            )}
           </div>
         </form>
       </div>

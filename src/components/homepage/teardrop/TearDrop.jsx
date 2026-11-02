@@ -1,4 +1,3 @@
-import React from "react";
 import { GiWaterDrop } from "react-icons/gi";
 import { RiLeafFill } from "react-icons/ri";
 import { AiFillCloud } from "react-icons/ai";

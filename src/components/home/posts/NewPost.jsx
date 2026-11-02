@@ -1,77 +1,83 @@
-import React, { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaUserAlt } from "react-icons/fa";
+import { toast } from "react-toastify";
 import SelectFile from "./SelectFile";
+import { useAuth } from "../../../context/AuthContext";
+import { createPost, fetchSpecies } from "../../../lib/api";
 
-const NewPost = ({ data }) => {
-  const text = useRef(null);
-  const plantType = useRef(null);
-  const [hasPhoto, setHasPhoto] = useState("");
+const NewPost = ({ onPublished }) => {
+  const { user, profile } = useAuth();
+  const [species, setSpecies] = useState([]);
+  const [speciesId, setSpeciesId] = useState("");
+  const [body, setBody] = useState("");
+  const [file, setFile] = useState(null);
+  const [busy, setBusy] = useState(false);
 
-  const handlePublish = () => {
-    const textVal = text.current.value;
-    const photoTF = hasPhoto ? true : false;
-    const photoPath = hasPhoto ? "mem-img.png" : "";
-    const plantTypeName = plantType.current.value;
-    const dataToAdd = {
-      user: "Test",
-      text: textVal,
-      hasPhoto: photoTF,
-      photo: photoPath,
-      plantType: plantTypeName,
-    };
+  useEffect(() => {
+    fetchSpecies().then(setSpecies).catch(() => {});
+  }, []);
 
-    
+  const handlePublish = async (event) => {
+    event.preventDefault();
+    if (!body.trim()) return;
+    setBusy(true);
+    try {
+      await createPost({ userId: user.id, body: body.trim(), speciesId: speciesId || null, file });
+      setBody("");
+      setFile(null);
+      setSpeciesId("");
+      toast.success("Posted!");
+      onPublished();
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
-    <div>
-      <div className="w-full bg-neutral-800/60 rounded-md mb-6 p-4 text-neutral-100 shadow-lg shadow-neutral-950">
-        {data.map((item, index) => (
-          <div className="flex justify-between" key={index}>
-            <span className="text-sm bg-green-500 text-neutral-800 px-4 py-1 rounded-sm flex items-center">
-              <FaUserAlt className="text-neutral-800 mr-2" />
-              <span className="pt-1">{item.name}</span>
-            </span>
-            <div className="flex gap-2">
-              <SelectFile setHasPhoto={setHasPhoto} />
-
-              <select
-                ref={plantType}
-                className="bg-green-500 text-neutral-800 text-sm px-3 cursor-pointer"
-              >
-                <option value="Monstera">Monstera</option>
-                <option value="Snake Plant">Snake Plant</option>
-                <option value="Spider Plant">Spider Plant</option>
-                <option value="Rubber Plant">Rubber Plant</option>
-                <option value="Pothos">Pothos</option>
-                <option value="ZZ Plant">ZZ Plant</option>
-                <option value="Fiddle Leaf Fig">Fiddle Leaf Fig</option>
-                <option value="Philodendron">Philodendron </option>
-                <option value="Peace Lily">Peace Lily</option>
-                <option value="English Ivy">English Ivy</option>
-              </select>
-            </div>
-          </div>
-        ))}
-
-        <textarea
-          ref={text}
-          className="block w-full h-full bg-neutral-900 rounded-md focus:outline-none mt-4 border border-green-900 focus:border-green-500 transition ease-in-out duration-300 p-2"
-          required
-        ></textarea>
-
-        <div className="flex flex-row-reverse mt-4">
-          <div>
-            <button
-              className="bg-green-500 text-neutral-800 px-2 pt-1 rounded-sm hover:opacity-80 transition ease-in-out duration-300"
-              onClick={handlePublish}
-            >
-              Publish
-            </button>
-          </div>
+    <form onSubmit={handlePublish} className="w-full bg-neutral-800/60 rounded-md mb-6 p-4 text-neutral-100 shadow-lg shadow-neutral-950">
+      <div className="flex justify-between">
+        <span className="text-sm bg-green-500 text-neutral-800 px-4 py-1 rounded-sm flex items-center">
+          <FaUserAlt className="text-neutral-800 mr-2" aria-hidden="true" />
+          <span className="pt-1">{profile?.username}</span>
+        </span>
+        <div className="flex gap-2">
+          <SelectFile file={file} setFile={setFile} />
+          <select
+            aria-label="Plant species"
+            value={speciesId}
+            onChange={(e) => setSpeciesId(e.target.value)}
+            className="bg-green-500 text-neutral-800 text-sm px-3 cursor-pointer"
+          >
+            <option value="">Any plant</option>
+            {species.map((s) => (
+              <option key={s.id} value={s.id}>{s.common_name}</option>
+            ))}
+          </select>
         </div>
       </div>
-    </div>
+
+      <textarea
+        aria-label="What's growing?"
+        placeholder="What's growing?"
+        value={body}
+        onChange={(e) => setBody(e.target.value)}
+        maxLength={2000}
+        className="block w-full h-24 bg-neutral-900 rounded-md focus:outline-none mt-4 border border-green-900 focus:border-green-500 transition ease-in-out duration-300 p-2"
+        required
+      />
+
+      <div className="flex flex-row-reverse mt-4">
+        <button
+          type="submit"
+          disabled={busy || !body.trim()}
+          className="bg-green-500 text-neutral-800 px-2 pt-1 rounded-sm hover:opacity-80 disabled:opacity-50 transition ease-in-out duration-300"
+        >
+          {busy ? "Publishing…" : "Publish"}
+        </button>
+      </div>
+    </form>
   );
 };
 

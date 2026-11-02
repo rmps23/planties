@@ -1,19 +1,17 @@
-import React from 'react'
 import SideLink from './SideLink'
 import { FaHome } from "react-icons/fa"
-import { RiLeafFill } from "react-icons/ri"
-import { RiNotification3Fill } from "react-icons/ri"
-import { RiUserFill } from "react-icons/ri"
+import { RiLeafFill, RiUserFill, RiQuestionAnswerFill } from "react-icons/ri"
+import { useAuth } from '../../../../context/AuthContext'
 
 const SideNavbar = () => {
+  const { profile } = useAuth()
   return (
-    <div className='w-44 transition ease-in-out duration-500 fixed top-24'>
-      <SideLink title="Home" icon={<FaHome/>}/>
-      <SideLink title="Profile" icon={<RiUserFill/>}/>
-      <SideLink title="Plants" icon={<RiLeafFill/>}/>
-      <SideLink title="Notifications" icon={<RiNotification3Fill/>}/>
-      
-    </div>
+    <nav aria-label="Main" className='w-14 md:w-44 transition ease-in-out duration-500 fixed top-24'>
+      <SideLink to="/feed" title="Home" icon={<FaHome/>}/>
+      <SideLink to={profile ? `/u/${profile.username}` : "/feed"} title="Profile" icon={<RiUserFill/>}/>
+      <SideLink to="/plants" title="Plants" icon={<RiLeafFill/>}/>
+      <SideLink to="/questions" title="Q&A" icon={<RiQuestionAnswerFill/>}/>
+    </nav>
   )
 }
 
