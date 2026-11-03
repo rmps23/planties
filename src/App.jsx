@@ -1,6 +1,6 @@
 import { Navigate, Outlet, Route, Routes } from "react-router-dom"
 import { AuthProvider, useAuth } from "./context/AuthContext"
-import { isConfigured } from "./lib/supabase"
+import { isConfigured } from "./lib/neon"
 import Intro from "./components/homepage/Intro"
 import AppLayout from "./components/home/AppLayout"
 import Feed from "./components/home/Feed"
@@ -36,9 +36,9 @@ function App() {
     return (
       <Splash>
         <p>
-          Missing Supabase configuration. Copy <code>.env.example</code> to{" "}
-          <code>.env</code> and set <code>VITE_SUPABASE_URL</code> and{" "}
-          <code>VITE_SUPABASE_PUBLISHABLE_KEY</code>.
+          Missing Neon configuration. Copy <code>.env.example</code> to{" "}
+          <code>.env</code> and set <code>VITE_NEON_AUTH_URL</code> and{" "}
+          <code>VITE_NEON_DATA_API_URL</code>.
         </p>
       </Splash>
     )

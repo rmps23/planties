@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useAuth } from "../../../context/AuthContext";
 import Field from "./Field";
 
@@ -21,15 +20,12 @@ const Signup = ({ handleCloseClick, changeToLogin }) => {
       return;
     }
     setBusy(true);
-    const { data, error: err } = await signUp(email, password, username);
+    const { error: err } = await signUp(email, password, username);
     setBusy(false);
     if (err) {
       setError(err.message);
-    } else if (data.session) {
-      navigate("/feed");
     } else {
-      toast.success("Check your email to confirm your account.");
-      handleCloseClick(event);
+      navigate("/feed");
     }
   };
 
