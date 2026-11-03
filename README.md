@@ -21,33 +21,35 @@ A social network for plant lovers: share photos of your plants, discover species
 
 ## Stack
 
-React 18 · Vite · Tailwind CSS · React Router · Supabase (Auth, Postgres with row level security, Storage) · react-toastify
+React 18 · Vite · Tailwind CSS · React Router · [Neon](https://neon.com) (Postgres, Managed Better Auth, Data API with row level security) · react-toastify
+
+There is no custom server: the browser talks to Neon's Auth and Data API, and row level security in `db/schema.sql` decides who can read or change what. Photos are resized in the browser and stored in the database as small `data:` URLs, so no file storage is needed.
 
 ## Running locally
 
-1. Create a free project at [supabase.com](https://supabase.com).
-2. In the SQL editor run `supabase/schema.sql`, then `supabase/seed_species.sql`.
-3. In Authentication > URL Configuration add `http://localhost:5173` (and your Vercel URL) as redirect URLs.
-4. Copy the environment file and fill it from Project Settings > API:
+1. Create a free project at [neon.com](https://neon.com) with Postgres and Better Auth, then link it: `neon init` and `neon deploy` (set `dataApi: true` in `neon.ts`). This writes the connection variables to `.env`.
+2. Add the public URLs the browser needs to `.env`, copying the values of `NEON_AUTH_BASE_URL` and `NEON_DATA_API_URL` (see `.env.example`):
+
+   `VITE_NEON_AUTH_URL` · `VITE_NEON_DATA_API_URL`
+
+3. Create the tables and the species list, then start the app:
 
 ```bash
-cp .env.example .env
 npm install
+npm run db:setup
 npm run dev
 ```
 
-Optional, to create the demo account and sample content (the service role key is secret and is never used by the app itself):
+Optional, to create the demo account and sample content (set `VITE_DEMO_EMAIL` and `VITE_DEMO_PASSWORD` in `.env` first; this also shows the demo login button):
 
 ```bash
-SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... DEMO_EMAIL=demo@example.com DEMO_PASSWORD=... node scripts/seed-demo.mjs
+npm run seed:demo
 ```
-
-Set `VITE_DEMO_EMAIL` and `VITE_DEMO_PASSWORD` in `.env` to show the demo login button.
 
 ## Deploying
 
-- Front-end: import the repo on Vercel and set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (and the demo variables) as environment variables.
-- Back-end: Supabase free tier, nothing else to host.
+- Front-end: import the repo on Vercel and set `VITE_NEON_AUTH_URL`, `VITE_NEON_DATA_API_URL` (and the demo variables) as environment variables.
+- Back-end: Neon free tier, nothing else to host. Add the site's URL to the allowed origins of Neon Auth so sign-up and password reset links work on the live site.
 
 ## Screenshots
 

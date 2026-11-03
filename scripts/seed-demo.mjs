@@ -1,64 +1,75 @@
-// Creates the demo account and a few sample posts, comments and a question.
-// Usage (service role key is secret: never commit it, never put it in a VITE_ variable):
-//   SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... DEMO_EMAIL=... DEMO_PASSWORD=... node scripts/seed-demo.mjs
+// Creates the demo account and a few sample posts, comments and a question on the Neon database.
+// Reads DATABASE_URL_UNPOOLED and NEON_AUTH_BASE_URL from .env (written by `neon deploy`).
+// Demo credentials come from VITE_DEMO_EMAIL / VITE_DEMO_PASSWORD (or DEMO_EMAIL / DEMO_PASSWORD).
+// Usage: npm run seed:demo
 import { readFile } from "node:fs/promises";
-import { createClient } from "@supabase/supabase-js";
+import pg from "pg";
+import sharp from "sharp";
 
-const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DEMO_EMAIL, DEMO_PASSWORD } = process.env;
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !DEMO_EMAIL || !DEMO_PASSWORD) {
-  console.error("Set SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DEMO_EMAIL and DEMO_PASSWORD.");
+try {
+  process.loadEnvFile(".env");
+} catch {
+  // variables may come from the environment instead
+}
+
+const env = process.env;
+const email = env.DEMO_EMAIL ?? env.VITE_DEMO_EMAIL;
+const password = env.DEMO_PASSWORD ?? env.VITE_DEMO_PASSWORD;
+const authUrl = env.NEON_AUTH_BASE_URL;
+if (!env.DATABASE_URL_UNPOOLED || !authUrl || !email || !password) {
+  console.error("Set DATABASE_URL_UNPOOLED, NEON_AUTH_BASE_URL and the demo email/password (see .env.example).");
   process.exit(1);
 }
 
-const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
-const check = ({ data, error }) => {
-  if (error) throw error;
-  return data;
-};
+const db = new pg.Client({ connectionString: env.DATABASE_URL_UNPOOLED });
+await db.connect();
 
-const { data: created, error: createErr } = await sb.auth.admin.createUser({
-  email: DEMO_EMAIL,
-  password: DEMO_PASSWORD,
-  email_confirm: true,
-  user_metadata: { username: "demo_gardener" },
-});
-let userId = created?.user?.id;
-if (createErr) {
-  if (!/already/i.test(createErr.message)) throw createErr;
-  const { data: list } = await sb.auth.admin.listUsers({ perPage: 1000 });
-  userId = list.users.find((u) => u.email === DEMO_EMAIL).id;
+try {
+  // 1. Create the user through the normal sign-up endpoint so the password is hashed by Better Auth.
+  let { rows } = await db.query('select id from neon_auth."user" where email = $1', [email]);
+  if (rows.length === 0) {
+    const res = await fetch(`${authUrl}/sign-up/email`, {
+      method: "POST",
+      headers: { "content-type": "application/json", origin: "http://localhost:5173" },
+      body: JSON.stringify({ email, password, name: "demo_gardener" }),
+    });
+    if (!res.ok) throw new Error(`Sign-up failed (${res.status}): ${await res.text()}`);
+    ({ rows } = await db.query('select id from neon_auth."user" where email = $1', [email]));
+  }
+  const userId = rows[0].id;
+
+  // 2. Reset the demo content so the script can run again.
+  await db.query("delete from public.posts where author_id = $1", [userId]);
+  await db.query("delete from public.questions where author_id = $1", [userId]);
+  const species = Object.fromEntries((await db.query("select id, slug from public.species")).rows.map((s) => [s.slug, s.id]));
+
+  const photo = async (file) => {
+    const jpeg = await sharp(await readFile(new URL(`../public/assets/plants/${file}`, import.meta.url)))
+      .resize({ width: 800, height: 800, fit: "inside", withoutEnlargement: true })
+      .jpeg({ quality: 70 })
+      .toBuffer();
+    return `data:image/jpeg;base64,${jpeg.toString("base64")}`;
+  };
+
+  const insertPost = async (slug, body, image) =>
+    (await db.query(
+      "insert into public.posts (author_id, species_id, body, image_url) values ($1, $2, $3, $4) returning id",
+      [userId, species[slug], body, image]
+    )).rows[0].id;
+
+  const lily = await insertPost("peace-lily", "My peace lily finally bloomed after a winter by the window. Watering once a week, whenever it droops a little.", await photo("peace-lily.jpg"));
+  await insertPost("spider-plant", "Spider plant babies are everywhere. Anyone want cuttings?", await photo("spider-plant.jpg"));
+  await insertPost("monstera", "New leaf unfurling on the monstera, first split one this year!", null);
+  await db.query("insert into public.comments (post_id, author_id, body) values ($1, $2, $3)", [lily, userId, "Tip: bottom-watering keeps the leaves dry and happy."]);
+  await db.query("insert into public.likes (post_id, user_id) values ($1, $2)", [lily, userId]);
+
+  const q = (await db.query(
+    "insert into public.questions (author_id, species_id, title, body) values ($1, $2, $3, $4) returning id",
+    [userId, species["fiddle-leaf-fig"], "Why is my fiddle leaf fig dropping leaves?", "Moved it last week to a brighter room. Lower leaves are browning."]
+  )).rows[0].id;
+  await db.query("insert into public.answers (question_id, author_id, body) values ($1, $2, $3)", [q, userId, "Moves stress them out. Keep it in one spot, steady light, and water only when the top 5 cm are dry."]);
+
+  console.log(`Demo account ready: ${email}`);
+} finally {
+  await db.end();
 }
-
-const species = Object.fromEntries(check(await sb.from("species").select("id, slug")).map((s) => [s.slug, s.id]));
-
-const upload = async (file) => {
-  const path = `${userId}/${file}`;
-  const body = await readFile(new URL(`../public/assets/plants/${file}`, import.meta.url));
-  check(await sb.storage.from("post-images").upload(path, body, { contentType: "image/jpeg", upsert: true }));
-  return sb.storage.from("post-images").getPublicUrl(path).data.publicUrl;
-};
-
-check(await sb.from("posts").delete().eq("author_id", userId));
-const posts = check(
-  await sb
-    .from("posts")
-    .insert([
-      { author_id: userId, species_id: species["peace-lily"], body: "My peace lily finally bloomed after a winter by the window. Watering once a week, whenever it droops a little.", image_url: await upload("peace-lily.jpg") },
-      { author_id: userId, species_id: species["spider-plant"], body: "Spider plant babies are everywhere. Anyone want cuttings?", image_url: await upload("spider-plant.jpg") },
-      { author_id: userId, species_id: species["monstera"], body: "New leaf unfurling on the monstera, first split one this year!" },
-    ])
-    .select("id")
-);
-check(await sb.from("comments").insert([{ post_id: posts[0].id, author_id: userId, body: "Tip: bottom-watering keeps the leaves dry and happy." }]));
-check(await sb.from("likes").insert([{ post_id: posts[0].id, user_id: userId }]));
-
-const q = check(
-  await sb
-    .from("questions")
-    .insert({ author_id: userId, species_id: species["fiddle-leaf-fig"], title: "Why is my fiddle leaf fig dropping leaves?", body: "Moved it last week to a brighter room. Lower leaves are browning." })
-    .select("id")
-    .single()
-);
-check(await sb.from("answers").insert({ question_id: q.id, author_id: userId, body: "Moves stress them out. Keep it in one spot, steady light, and water only when the top 5 cm are dry." }));
-
-console.log(`Demo account ready: ${DEMO_EMAIL}`);

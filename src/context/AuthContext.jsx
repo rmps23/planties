@@ -1,29 +1,30 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { client } from "../lib/neon";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [session, setSession] = useState(null);
+  const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-    });
-    const { data } = supabase.auth.onAuthStateChange((_event, next) => setSession(next));
-    return () => data.subscription.unsubscribe();
+  const refresh = useCallback(async () => {
+    const { data } = await client.auth.getSession();
+    setUser(data?.session ? data.user : null);
+    return data;
   }, []);
 
-  const userId = session?.user?.id;
+  useEffect(() => {
+    refresh().finally(() => setLoading(false));
+  }, [refresh]);
+
+  const userId = user?.id;
   useEffect(() => {
     if (!userId) {
       setProfile(null);
       return;
     }
-    supabase
+    client
       .from("profiles")
       .select("*")
       .eq("id", userId)
@@ -31,24 +32,30 @@ export const AuthProvider = ({ children }) => {
       .then(({ data }) => setProfile(data));
   }, [userId]);
 
-  const value = useMemo(
-    () => ({
-      session,
-      user: session?.user ?? null,
+  const value = useMemo(() => {
+    const withRefresh = (call) => async (...args) => {
+      const result = await call(...args);
+      if (!result.error) await refresh();
+      return result;
+    };
+    return {
+      user,
       profile,
       loading,
-      signIn: (email, password) => supabase.auth.signInWithPassword({ email, password }),
-      signUp: (email, password, username) =>
-        supabase.auth.signUp({ email, password, options: { data: { username } } }),
-      signOut: () => supabase.auth.signOut(),
+      signIn: withRefresh((email, password) => client.auth.signIn.email({ email, password })),
+      // The username is stored as the Better Auth name; a trigger turns it into the profile row.
+      signUp: withRefresh((email, password, username) =>
+        client.auth.signUp.email({ email, password, name: username })
+      ),
+      signOut: async () => {
+        await client.auth.signOut();
+        setUser(null);
+      },
       sendReset: (email) =>
-        supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/reset-password`,
-        }),
-      updatePassword: (password) => supabase.auth.updateUser({ password }),
-    }),
-    [session, profile, loading]
-  );
+        client.auth.requestPasswordReset({ email, redirectTo: `${window.location.origin}/reset-password` }),
+      resetPassword: (newPassword, token) => client.auth.resetPassword({ newPassword, token }),
+    };
+  }, [user, profile, loading, refresh]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
